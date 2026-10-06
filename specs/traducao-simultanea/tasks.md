@@ -85,7 +85,7 @@ Entre parênteses, os requisitos atendidos.
 - [ ] **T26.** Recuperação de falhas do offscreen/worker e mensagens de erro. (R9.3)
 - [ ] **T27.** Escrever `test-plan.md` (um caso por critério de aceitação) e executá-lo
   em aula real; registrar resultados. (todos)
-- [ ] **T28.** README com instalação, uso e limitações conhecidas.
+- [x] **T28.** README com instalação, uso e limitações conhecidas.
 
 ## Fase 7 — Revisão 2: leitura à frente e voz neural (design §0)
 
