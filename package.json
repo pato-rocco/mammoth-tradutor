@@ -1,0 +1,22 @@
+{
+    "name":  "mammoth-tradutor",
+    "version":  "0.1.0",
+    "private":  true,
+    "type":  "module",
+    "scripts":  {
+                    "dev":  "node scripts/copy-ort.mjs \u0026\u0026 vite build --watch",
+                    "build":  "node scripts/copy-ort.mjs \u0026\u0026 tsc --noEmit \u0026\u0026 vite build \u0026\u0026 node scripts/build-frame.mjs",
+                    "test":  "vitest run"
+                },
+    "devDependencies":  {
+                            "@crxjs/vite-plugin":  "^3.0.0",
+                            "@types/chrome":  "^0.3.4",
+                            "typescript":  "^7.0.2",
+                            "vite":  "^8.3.3",
+                            "vitest":  "^5.0.3"
+                        },
+    "dependencies":  {
+                         "@huggingface/transformers":  "^4.3.0",
+                         "mp4box":  "^2.4.1"
+                     }
+}

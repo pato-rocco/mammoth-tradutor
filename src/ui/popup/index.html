@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <title>Mammoth Tradutor</title>
+    <link rel="stylesheet" href="./popup.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Mammoth Tradutor</h1>
+      <span class="pair">EN → PT-BR</span>
+    </header>
+
+    <label class="row main">
+      <span>Traduzir esta aula</span>
+      <input type="checkbox" id="power" class="switch" disabled />
+    </label>
+    <p id="status" class="status" role="status"></p>
+
+    <fieldset>
+      <label class="row">
+        <span>Legendas</span>
+        <input type="checkbox" id="captions" class="switch" />
+      </label>
+      <label class="row">
+        <span>Dublagem</span>
+        <input type="checkbox" id="dubbing" class="switch" />
+      </label>
+      <label class="row" title="Segura o vídeo até metade do restante da aula estar traduzida">
+        <span>Preparar antes de tocar</span>
+        <input type="checkbox" id="prebuffer" class="switch" />
+      </label>
+      <label class="row" title="Liga a tradução ao abrir uma aula, sem precisar clicar aqui">
+        <span>Ligar sozinha nas aulas</span>
+        <input type="checkbox" id="autostart" class="switch" />
+      </label>
+      <label class="row" title="Traduz menus, títulos e descrições da página do curso">
+        <span>Traduzir a página</span>
+        <input type="checkbox" id="translate-page" class="switch" />
+      </label>
+    </fieldset>
+    <pre id="diag" class="diag"></pre>
+
+    <script type="module" src="./popup.ts"></script>
+  </body>
+</html>
