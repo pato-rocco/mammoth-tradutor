@@ -80,7 +80,7 @@ Entre parênteses, os requisitos atendidos.
 
 - [ ] **T24.** Assistente de primeiro uso: checagem de requisitos e download dos
   modelos com progresso. (R6.1, R6.2, R6.5)
-- [ ] **T25.** Página de opções: aparência da legenda, voz/velocidade/volume,
+- [x] **T25.** Página de opções: aparência da legenda, voz/velocidade/volume,
   glossário, qualidade; aplicação imediata na sessão ativa. (R4.6, R5.5, R6.3, R6.4)
 - [ ] **T26.** Recuperação de falhas do offscreen/worker e mensagens de erro. (R9.3)
 - [ ] **T27.** Escrever `test-plan.md` (um caso por critério de aceitação) e executá-lo
@@ -105,3 +105,5 @@ Entre parênteses, os requisitos atendidos.
 > pré-carregamento, troca de aula e início automático. Pendentes: T10, T13, T20, T22–T28 e T33
 > (várias superadas pela Revisão 2; revisar ao retomar), além do seletor de voz e da página de opções.
 - [x] **T38.** Tradução do texto da página, inclusive do material da aula em quadro isolado (script próprio, arquivo único) e dos textos de exemplo dos campos; novas tentativas em caso de falha. Validado pelo usuário. (R11)
+- [x] **T39.** Página de opções com amostra de legenda e de voz; diagnóstico do popup oculto por padrão. Validada pelo usuário. (R6.7)
+- [x] **T40.** Guardar a tradução das duas últimas aulas e copiar pelo popup. Validada pelo usuário. (R12)

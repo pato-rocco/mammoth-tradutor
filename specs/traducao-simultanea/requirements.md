@@ -69,6 +69,16 @@ Requisitos alterados pelas decisões acima:
   O SISTEMA NÃO DEVE traduzir código, campos de digitação, e-mails e endereços, nem
   alterar a estrutura da página. QUANDO a opção for desligada, O SISTEMA DEVE restaurar
   o texto original. A tradução é local, com o mesmo tradutor e glossário das legendas.
+- **R12 (novo, pedido do usuário) — Copiar a tradução.** O SISTEMA DEVE guardar o texto
+  traduzido das duas aulas assistidas mais recentes, de modo que trocar de aula não
+  apague a tradução da anterior, e oferecer no popup um botão para copiar cada uma,
+  indicando se a aula foi traduzida até o fim ou até que ponto. Só o texto traduzido é
+  guardado, localmente; áudio e vídeo continuam não sendo armazenados (R8.3).
+- **R6.7 (novo) — Página de opções.** O SISTEMA DEVE oferecer uma página de opções com:
+  aparência da legenda (com amostra), voz (com botão para ouvir), ritmo e volumes da
+  dublagem, início automático, percentual de pré-carregamento, tradução da página,
+  qualidade da transcrição, exibição do diagnóstico e glossário. As alterações são
+  salvas na hora e aplicadas à aula aberta.
 - **Fora de escopo (esclarecido).** A extensão lê o arquivo da aula apenas em memória,
   para transcrevê-lo; continua sem gravar ou exportar vídeo/áudio.
 

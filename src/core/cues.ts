@@ -55,6 +55,21 @@ export function nextToProcess<T extends { tEnd: number }>(pending: T[], playhead
   return pending.find((item) => item.tEnd > playhead) ?? pending[0]
 }
 
+// Pausa na fala a partir da qual o texto copiado abre um novo parágrafo.
+const PARAGRAPH_GAP_SECONDS = 1.5
+
+/** O texto traduzido da aula em parágrafos corridos, para copiar. */
+export function transcriptText(cues: Cue[]): string {
+  const paragraphs: string[] = []
+  let previousEnd = -Infinity
+  for (const cue of cues) {
+    if (paragraphs.length === 0 || cue.tStart - previousEnd > PARAGRAPH_GAP_SECONDS) paragraphs.push(cue.text)
+    else paragraphs[paragraphs.length - 1] += ` ${cue.text}`
+    previousEnd = cue.tEnd
+  }
+  return paragraphs.join('\n\n')
+}
+
 /** Uma fala da dublagem: uma ou mais legendas seguidas, ditas de uma vez só. */
 export interface Utterance {
   id: number

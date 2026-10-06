@@ -19,6 +19,7 @@ export type Message =
   | { type: 'GET_VIDEO' }
   | { type: 'AUTO_START' }
   | { type: 'TRANSLATE_TEXT'; texts: string[]; forwarded?: boolean }
+  | { type: 'PREVIEW_VOICE'; voice: string; rate: number; volume: number; forwarded?: boolean }
   | { type: 'START'; streamId: string | null; video: VideoState | null; settings: Settings }
   | { type: 'STOP' }
   | { type: 'SETTINGS'; settings: Settings }

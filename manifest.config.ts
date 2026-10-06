@@ -29,6 +29,7 @@ export default defineManifest({
     default_title: 'Mammoth Tradutor',
     default_popup: 'src/ui/popup/index.html',
   },
+  options_ui: { page: 'src/ui/options/index.html', open_in_tab: true },
   content_security_policy: {
     extension_pages: "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'",
   },

@@ -2,6 +2,7 @@ import {
   groupUtterances,
   insertCue,
   nextToProcess,
+  DUB_BASE_SPEED,
   planDub,
   type Cue,
   type DubPlan,
@@ -207,7 +208,15 @@ async function loadModels(current: Settings): Promise<void> {
   if (current.dubbing.enabled) await loadVoice()
 }
 
-async function loadVoice(): Promise<void> {
+// Carregamento em andamento: quem pedir a voz nesse meio-tempo espera o mesmo carregamento.
+let voiceLoading: Promise<void> | null = null
+
+function loadVoice(): Promise<void> {
+  voiceLoading ??= startVoice()
+  return voiceLoading
+}
+
+async function startVoice(): Promise<void> {
   if (voice) return
   const engine = new Voice()
   voice = engine
@@ -218,6 +227,7 @@ async function loadVoice(): Promise<void> {
     void pumpVoice()
   } catch (err) {
     voice = null
+    voiceLoading = null
     engine.dispose()
     lastProblem = `voz: ${errorText(err)}`
     notice('Não foi possível carregar a voz em português; seguindo só com legendas.')
@@ -380,6 +390,20 @@ async function translatePageTexts(texts: string[]): Promise<string[]> {
   return out
 }
 
+// Identificador reservado para a amostra de voz da página de opções (fora da numeração das falas).
+const PREVIEW_CLIP_ID = -1
+const PREVIEW_TEXT = 'Olá! Esta é a voz que vai narrar as suas aulas em português.'
+
+/** Sintetiza e toca uma frase de amostra com a voz escolhida na página de opções. */
+async function previewVoice(name: string, rate: number, volume: number): Promise<void> {
+  await loadVoice()
+  if (!voice || !voiceReady) throw new Error('Não foi possível carregar a voz.')
+  // Instante infinito: a amostra nunca é confundida com fala antiga a liberar.
+  await voice.prepare(PREVIEW_CLIP_ID, Infinity, PREVIEW_TEXT, name, DUB_BASE_SPEED * rate)
+  voice.resume()
+  voice.play(PREVIEW_CLIP_ID, 1, volume)
+}
+
 function onVideo(next: VideoState): void {
   const previous = video
   video = next
@@ -442,6 +466,7 @@ async function stop(): Promise<void> {
   voice?.dispose()
   transcriber = translator = voice = null
   voiceReady = false
+  voiceLoading = null
 }
 
 chrome.runtime.onMessage.addListener((message: Message, _sender, sendResponse: (reply: unknown) => void) => {
@@ -480,6 +505,13 @@ chrome.runtime.onMessage.addListener((message: Message, _sender, sendResponse: (
     case 'STOP_DUB':
       voice?.stop()
       return false
+    case 'PREVIEW_VOICE':
+      if (!message.forwarded) return false
+      previewVoice(message.voice, message.rate, message.volume).then(
+        () => sendResponse(null),
+        (err: unknown) => sendResponse(errorText(err)),
+      )
+      return true
     case 'TRANSLATE_TEXT':
       // Só atende o pedido repassado pelo service worker; o original, vindo da página, é dele.
       if (!message.forwarded) return false

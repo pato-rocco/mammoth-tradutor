@@ -1,5 +1,6 @@
 import type { Session } from '../../core/session'
 import { NOTICE_KEY, send, type Message, type StateMessage } from '../../shared/messages'
+import { loadTranscripts } from '../../shared/transcripts'
 import { DEFAULT_SETTINGS, loadSettings, saveSettings } from '../../shared/settings'
 import { isSupportedUrl } from '../../shared/site'
 import { createTranslator, translatorStatus } from '../../shared/translator-api'
@@ -107,6 +108,31 @@ async function toggle(on: boolean): Promise<void> {
   if (reply) render(reply.session)
 }
 
+function clock(seconds: number): string {
+  return `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`
+}
+
+/** Lista as traduções guardadas (as duas aulas mais recentes), cada uma com seu botão de copiar. */
+async function showTranscripts(): Promise<void> {
+  const box = document.querySelector<HTMLDivElement>('#transcripts')!
+  box.replaceChildren()
+  for (const saved of await loadTranscripts()) {
+    const button = document.createElement('button')
+    button.type = 'button'
+    button.className = 'link'
+    const progress = saved.complete ? 'completa' : `até ${clock(saved.until)}`
+    button.textContent = `Copiar tradução: ${saved.title} (${progress})`
+    button.title = saved.title
+    button.addEventListener('click', async () => {
+      await navigator.clipboard.writeText(saved.text)
+      status.classList.remove('error')
+      status.textContent = saved.complete
+        ? 'Tradução da aula copiada.'
+        : `Copiado até ${clock(saved.until)}; essa aula não foi traduzida até o fim.`
+    })
+    box.append(button)
+  }
+}
 async function savePreference(): Promise<void> {
   const settings = await loadSettings()
   settings.captions.enabled = captions.checked
@@ -128,6 +154,7 @@ async function init(): Promise<void> {
   prebuffer.checked = settings.prebufferPercent > 0
   autoStart.checked = settings.autoStart
   translatePage.checked = settings.translatePage
+  diag.hidden = !settings.showDiagnostics
 
   const reply = await send<StateMessage>({ type: 'GET_STATE' })
   render(reply?.session ?? { tabId: null, status: 'idle' })
@@ -138,6 +165,8 @@ async function init(): Promise<void> {
   prebuffer.addEventListener('change', () => void savePreference())
   autoStart.addEventListener('change', () => void savePreference())
   translatePage.addEventListener('change', () => void savePreference())
+  void showTranscripts()
+  document.querySelector<HTMLButtonElement>('#options')!.addEventListener('click', () => void chrome.runtime.openOptionsPage())
 }
 
 chrome.runtime.onMessage.addListener((message: Message) => {

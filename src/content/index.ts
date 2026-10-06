@@ -1,6 +1,7 @@
-import { blockAt, cueAt, insertCue, type Cue } from '../core/cues'
+import { blockAt, cueAt, insertCue, transcriptText, type Cue } from '../core/cues'
 import { captionDuration } from '../core/captionLayout'
 import { send, type Message, type StateMessage, type VideoState } from '../shared/messages'
+import { saveTranscript } from '../shared/transcripts'
 import { DEFAULT_SETTINGS, loadSettings, onSettingsChanged } from '../shared/settings'
 import { findVideo, Overlay } from './overlay'
 import { PageTranslator } from './page-translate'
@@ -130,10 +131,43 @@ function isRunning(status: StateMessage['session']['status']): boolean {
   return status === 'starting' || status === 'active'
 }
 
+// A tradução da aula é guardada para o usuário copiar depois (as duas aulas mais recentes).
+const TRANSCRIPT_SAVE_DELAY_MS = 3000
+let lessonKey = location.pathname
+let lessonTitle = ''
+let transcriptTimer: number | undefined
+
+function storeTranscript(): void {
+  clearTimeout(transcriptTimer)
+  transcriptTimer = undefined
+  if (cues.length === 0) return
+  void saveTranscript({
+    key: lessonKey,
+    title: lessonTitle || lessonKey,
+    text: transcriptText(cues),
+    until: cues[cues.length - 1]!.tEnd,
+    complete: prepared?.done ?? false,
+    savedAt: Date.now(),
+  })
+}
+
+function scheduleTranscriptSave(): void {
+  // O título é lido cedo, enquanto a página ainda mostra esta aula.
+  lessonTitle ||= document.querySelector('h1')?.textContent?.trim() ?? ''
+  transcriptTimer ??= window.setTimeout(storeTranscript, TRANSCRIPT_SAVE_DELAY_MS)
+}
+
+// Ao sair da página (inclusive indo para a próxima aula), guarda a tradução antes que ela se perca.
+window.addEventListener('pagehide', storeTranscript)
+
 function videoState(): VideoState {
   const video = findVideo()
   const src = video?.currentSrc || null
   if (src !== lastSrc) {
+    // Antes de descartar a aula anterior, guarda o que foi traduzido dela.
+    storeTranscript()
+    lessonKey = location.pathname
+    lessonTitle = ''
     // O site trocou de aula: nada da anterior vale mais.
     lastSrc = src
     lesson++
@@ -244,6 +278,7 @@ function onCue(cue: Cue): void {
     cue = { ...cue, tStart: now, tEnd: now + captionDuration(cue.text) / 1000 }
   }
   insertCue(cues, cue)
+  scheduleTranscriptSave()
 }
 
 function showNotice(text: string): void {
@@ -296,6 +331,7 @@ chrome.runtime.onMessage.addListener((message: Message, _sender, sendResponse: (
     case 'GET_VIDEO':
       sendResponse(videoState())
       break
+
     case 'STATE':
       setActive(message.forThisTab === true && isRunning(message.session.status))
       if (message.forThisTab && message.session.status === 'error') {
@@ -316,6 +352,7 @@ chrome.runtime.onMessage.addListener((message: Message, _sender, sendResponse: (
     case 'PROGRESS':
       if (active && message.lesson === lesson) {
         prepared = { until: message.until, duration: message.duration, done: message.done }
+        if (message.done) scheduleTranscriptSave()
       }
       break
     case 'NOTICE':

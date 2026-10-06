@@ -7,6 +7,7 @@ import {
   insertCue,
   nextToProcess,
   planDub,
+  transcriptText,
   type Cue,
   type Utterance,
 } from '../src/core/cues'
@@ -75,6 +76,14 @@ describe('nextToProcess', () => {
   it('volta ao mais antigo quando nada à frente está pendente', () => {
     expect(nextToProcess(pending, 100)).toBe(pending[0])
     expect(nextToProcess([], 0)).toBeUndefined()
+  })
+})
+
+describe('transcriptText', () => {
+  it('junta as legendas em parágrafos, separados nas pausas longas', () => {
+    const cues = [cue(1, 0, 2, 'Primeira frase.'), cue(2, 2.2, 4, 'Segunda frase.'), cue(3, 8, 10, 'Outro assunto.')]
+    expect(transcriptText(cues)).toBe('Primeira frase. Segunda frase.\n\nOutro assunto.')
+    expect(transcriptText([])).toBe('')
   })
 })
 

@@ -20,6 +20,8 @@ export interface Settings {
   autoStart: boolean
   /** Traduz também o texto da página do curso (menus, títulos, descrições). */
   translatePage: boolean
+  /** Exibe no popup as linhas técnicas de diagnóstico. */
+  showDiagnostics: boolean
   glossary: string[]
 }
 
@@ -30,6 +32,7 @@ export const DEFAULT_SETTINGS: Settings = {
   prebufferPercent: 50,
   autoStart: true,
   translatePage: true,
+  showDiagnostics: false,
   glossary: [],
 }
 
@@ -49,6 +52,7 @@ export function mergeSettings(stored: Stored | undefined): Settings {
     prebufferPercent: typeof s.prebufferPercent === 'number' ? s.prebufferPercent : DEFAULT_SETTINGS.prebufferPercent,
     autoStart: typeof s.autoStart === 'boolean' ? s.autoStart : DEFAULT_SETTINGS.autoStart,
     translatePage: typeof s.translatePage === 'boolean' ? s.translatePage : DEFAULT_SETTINGS.translatePage,
+    showDiagnostics: typeof s.showDiagnostics === 'boolean' ? s.showDiagnostics : DEFAULT_SETTINGS.showDiagnostics,
     glossary: Array.isArray(s.glossary) ? s.glossary : DEFAULT_SETTINGS.glossary,
   }
 }

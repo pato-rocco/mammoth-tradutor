@@ -167,6 +167,18 @@ function diagnostics(): string {
 
 chrome.runtime.onMessage.addListener((message: Message, sender, sendResponse: (reply: StateMessage) => void) => {
   switch (message.type) {
+    case 'PREVIEW_VOICE': {
+      // Amostra de voz pedida pela página de opções; responde com o texto do erro, ou nulo se tocou.
+      if (message.forwarded) return false
+      const respond = sendResponse as (reply: unknown) => void
+      ensureOffscreen()
+        .then(() => send<string | null>({ ...message, forwarded: true }))
+        .then(
+          (problem) => respond(problem === undefined ? 'O processador de áudio não respondeu.' : problem),
+          (err: unknown) => respond(errorText(err)),
+        )
+      return true
+    }
     case 'TRANSLATE_TEXT': {
       // Pedido da página: garante que o processador existe, repassa e sempre devolve uma resposta
       // (nula em caso de falha), para a página poder tentar de novo.
