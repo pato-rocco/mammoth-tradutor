@@ -32,6 +32,9 @@ transcrições e as traduções não são enviados a nenhum serviço.
 
 ## Instalação
 
+Há um [tutorial passo a passo](docs/TUTORIAL.md), com primeiro uso e solução de
+problemas. Em resumo:
+
 ```bash
 npm install
 npm run build
